@@ -1003,10 +1003,19 @@ static void offline_event_loop(void) {
 int main(int argc, char** argv) {
 
   s32 r;
+  char fppath[PATH_MAX+1];
+  
+  /*
+    fppath point to the standard location found in configure by default.
+    If i don't find here i try in the current directory, for
+    local build
+  */ 
+  snprintf(fppath,sizeof(fppath),"%s/%s",P0FDATADIR,FP_FILE);
+  if (access(fppath,R_OK)) snprintf(fppath,sizeof(fppath),"%s",FP_FILE);
 
   setlinebuf(stdout);
 
-  SAYF("--- p0f " VERSION " by Michal Zalewski <lcamtuf@coredump.cx> ---\n\n");
+  SAYF("--- p0f " PACKAGE_VERSION " by Michal Zalewski <lcamtuf@coredump.cx> ---\n\n");
 
   if (getuid() != geteuid())
     FATAL("Please don't make me setuid. See README for more.\n");
@@ -1188,7 +1197,7 @@ int main(int argc, char** argv) {
 
   http_init();
 
-  read_config(fp_file ? fp_file : (u8*)FP_FILE);
+  read_config(fp_file ? fp_file : (u8*)fppath);
 
   prepare_pcap();
   prepare_bpf();
