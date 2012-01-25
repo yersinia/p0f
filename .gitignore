@@ -86,9 +86,9 @@ mkinstalldirs
 *.mo
 *.mode1v3
 *.pbxuser
-p03f.pc
-p03f.spec
-p03f-*.tar.gz
+p0f.pc
+p0f.spec
+p0f-*.tar.gz
 POTFILES
 Rules-quot
 *.sed
@@ -103,7 +103,7 @@ tdict
 test1
 test2
 test3
-test-p03frc
+test-p0frc
 test_results
 tests
 test?-test?.o
