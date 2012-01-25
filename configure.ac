@@ -12,6 +12,9 @@ AC_CONFIG_AUX_DIR([build-aux])
 AC_CANONICAL_HOST
 AM_INIT_AUTOMAKE([1.11 color-tests -Wall -Werror foreign])
 
+#
+AC_COPYRIGHT([Copyright (C) 2012 by Michal Zalewski <lcamtuf@coredump.cx>])
+
 # Checks for programs.
 AC_PROG_CXX
 AC_PROG_CC
