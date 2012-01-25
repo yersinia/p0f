@@ -14,7 +14,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "config.h"
+#include "system.h"
 #include "types.h"
 #include "debug.h"
 

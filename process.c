@@ -24,7 +24,7 @@
 #include <sys/stat.h>
 
 #include "types.h"
-#include "config.h"
+#include "system.h"
 #include "debug.h"
 #include "alloc-inl.h"
 #include "process.h"
