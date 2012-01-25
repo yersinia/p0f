@@ -1,11 +1,11 @@
 #!/bin/sh
 #
 # $Id: autogen.sh,v 1.23 2011/11/25 11:54:27 devzero2000 Exp $
-# autogen.sh: autogen.sh script for p03f projects
+# autogen.sh: autogen.sh script for p0f projects
 #
 # Copyright (c) 2010-2011 Elia Pinto <devzero2000@rpm5.org>
 #
-# This program have the same copyright notice as p03f
+# This program have the same copyright notice as p0f
 # itself
 #
 # Global Function and Variables
@@ -142,7 +142,7 @@ autoconf   2.63
 automake   1.11.1
 "
 echo
-Notice "Bootstrapping p03f build system..."
+Notice "Bootstrapping p0f build system..."
 echo
 # Guess whether we are using configure.ac or configure.in
 if test -f configure.ac; then
