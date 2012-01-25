@@ -89,6 +89,7 @@ mkinstalldirs
 p0f.pc
 p0f.spec
 p0f-*.tar.gz
+p0f
 POTFILES
 Rules-quot
 *.sed
