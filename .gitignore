@@ -80,6 +80,9 @@ m4
 Makefile
 Makefile.in
 Makefile.in.in
+tools/Makefile
+tools/Makefile.in
+tools/Makefile.in.in
 Makevars.template
 missing
 mkinstalldirs
@@ -109,3 +112,4 @@ test_results
 tests
 test?-test?.o
 types
+tools/p0f*
