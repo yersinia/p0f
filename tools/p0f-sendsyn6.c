@@ -32,11 +32,11 @@
 #include <sys/time.h>
 #include <sys/socket.h>
 
-#include "../types.h"
-#include "../config.h"
-#include "../alloc-inl.h"
-#include "../debug.h"
-#include "../tcp.h"
+#include "types.h"
+#include "system.h"
+#include "alloc-inl.h"
+#include "debug.h"
+#include "tcp.h"
 
 
 /* Do a basic IPv6 TCP checksum. */
