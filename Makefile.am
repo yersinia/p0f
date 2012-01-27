@@ -77,6 +77,8 @@ noinst_HEADERS = alloc-inl.h api.h debug.h fp_http.h fp_mtu.h fp_tcp.h hash.h la
 p0fdir = $(pkgdatadir)
 dist_p0f_DATA = p0f.fp
 
+EXTRA_DISTS = autogen.sh README-prereq
+
 dist_doc_DATA  = ChangeLog COPYING existential-notes.txt extra-sigs.txt README TODO
 #dist_man_MANS = p03f.3
 
