@@ -119,6 +119,9 @@ u32 TRK_cnt[ALLOC_BUCKETS];
 
 static void usage(void) {
 
+
+#ifndef __CYGWIN__
+
   ERRORF(
 
 "Usage: p0f [ ...options... ] [ 'filter rule' ]\n"
@@ -134,17 +137,13 @@ static void usage(void) {
 "\n"
 "  -f file   - read fingerprint database from 'file' (%s)\n"
 "  -o file   - write information to the specified log file\n"
-#ifndef __CYGWIN__
 "  -s name   - answer to API queries at a named unix socket\n"
-#endif /* !__CYGWIN__ */
 "  -u user   - switch to the specified unprivileged account and chroot\n"
 "  -d        - fork into background (requires -o or -s)\n"
 "\n"
 "Performance-related options:\n"
 "\n"
-#ifndef __CYGWIN__
 "  -S limit  - limit number of parallel API connections (%u)\n"
-#endif /* !__CYGWIN__ */
 "  -t c,h    - set connection / host cache age limits (%us,%um)\n"
 "  -m c,h    - cap the number of active connections / hosts (%u,%u)\n"
 "\n"
@@ -154,10 +153,42 @@ static void usage(void) {
 "Problems? You can reach the author at <lcamtuf@coredump.cx>.\n",
 
     FP_FILE,
-#ifndef __CYGWIN__
     API_MAX_CONN,
-#endif /* !__CYGWIN__ */
     CONN_MAX_AGE, HOST_IDLE_LIMIT, MAX_CONN,  MAX_HOSTS);
+
+#else 
+
+  ERRORF(
+
+"Usage: p0f [ ...options... ] [ 'filter rule' ]\n"
+"\n"
+"Network interface options:\n"
+"\n"
+"  -i iface  - listen on the specified network interface\n"
+"  -r file   - read offline pcap data from a given file\n"
+"  -p        - put the listening interface in promiscuous mode\n"
+"  -L        - list all available interfaces\n"
+"\n"
+"Operating mode and output settings:\n"
+"\n"
+"  -f file   - read fingerprint database from 'file' (%s)\n"
+"  -o file   - write information to the specified log file\n"
+"  -u user   - switch to the specified unprivileged account and chroot\n"
+"  -d        - fork into background (requires -o or -s)\n"
+"\n"
+"Performance-related options:\n"
+"\n"
+"  -t c,h    - set connection / host cache age limits (%us,%um)\n"
+"  -m c,h    - cap the number of active connections / hosts (%u,%u)\n"
+"\n"
+"Optional filter expressions (man tcpdump) can be specified in the command\n"
+"line to prevent p0f from looking at incidental network traffic.\n"
+"\n"
+"Problems? You can reach the author at <lcamtuf@coredump.cx>.\n",
+
+    FP_FILE,
+    CONN_MAX_AGE, HOST_IDLE_LIMIT, MAX_CONN,  MAX_HOSTS);
+#endif /* !__CYGWIN__ */
 
   exit(1);
 
