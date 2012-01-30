@@ -80,6 +80,6 @@ dist_p0f_DATA = p0f.fp
 
 EXTRA_DISTS = autogen.sh README-prereq
 
-dist_doc_DATA  = ChangeLog COPYING existential-notes.txt extra-sigs.txt README TODO
+dist_doc_DATA  = ChangeLog COPYING  README TODO docs/existential-notes.txt docs/extra-sigs.txt
 #dist_man_MANS = p03f.3
 
