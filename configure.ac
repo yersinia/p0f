@@ -16,36 +16,85 @@ AM_INIT_AUTOMAKE([1.11 color-tests -Wall -Werror foreign])
 AC_COPYRIGHT([Copyright (C) 2012 by Michal Zalewski <lcamtuf@coredump.cx>])
 
 # Checks for programs.
-AC_PROG_CXX
 AC_PROG_CC
 AC_PROG_INSTALL
 AC_PROG_MAKE_SET
 
 # Checks for libraries.
+AC_MSG_CHECKING([checking for pcap library]) 
 have_pcap=no
-AC_SEARCH_LIBS([pcap_findalldevs], [pcap],
-  [have_pcap=yes])
+AC_PATH_TOOL(PCAP_CONFIG, pcap-config)
+AS_IF([test -n "$PCAP_CONFIG"],
+        [
+		pcap_cflags=`"$PCAP_CONFIG" --cflags`
+		pcap_ldflags=`"$PCAP_CONFIG" --libs`
+                p0f_CFLAGS_ADD([$pcap_cflags], [P0F_CFLAGS])
+               	p0f_LDFLAGS_ADD([$pcap_ldflags], [P0F_LDFLAGS])
+ 	 	AC_CHECK_HEADERS([pcap.h], [],
+ 		[])
+	        AC_CHECK_HEADERS([pcap-bpf.h], [],
+                [])
+        ],
+        [
+	###############################################################
+	# We don't have pcap-config; find out any additional link flags
+	# we need.  (If we have pcap-config, we assume it tells us what
+	# we need.)
+	###############################################################
+	case "$host_os" in
 
-AS_IF([test "x${have_pcap}" = xno],
-      [ AC_SEARCH_LIBS([pcap_findalldevs], [wpcap],
-      [have_pcap=yes])
-      AS_IF([test "x${have_pcap}" = xyes],
-            [
-  		AC_CHECK_HEADERS([pcap.h], [],
- 	        [have_pcap=no])
-                AC_CHECK_HEADERS([pcap-bpf.h], [],
-                [have_pcap=no])
-                AS_IF([test "x${have_pcap}" = xno],
-                      [AC_MSG_ERROR([pcap library don't found])]
-                )
-            ],
-            [AC_MSG_ERROR([pcap library don't found
-i                          hheheh
-                          ])]
-      )
-      ]
+	aix*)
+	    ############################################################
+	    # If libpcap is DLPI-based, we have to use /lib/pse.exp if
+	    # present, as we use the STREAMS routines.
+	    #
+	    # (XXX - true only if we're linking with a static libpcap?)
+	    ############################################################
+	    #
+	    pseexe="/lib/pse.exp"
+	    AC_MSG_CHECKING(for $pseexe)
+	    if test -f $pseexe ; then
+		    AC_MSG_RESULT(yes)
+		    pcap_ldflags="-I:$pseexe"
+               	    p0f_LDFLAGS_ADD([$pcap_ldflags], [P0F_LDFLAGS])
+	    fi
+
+	    #
+	    # If libpcap is BPF-based, we need "-lodm" and "-lcfg", as
+	    # we use them to load the BPF module.
+	    #
+	    # (XXX - true only if we're linking with a static libpcap?)
+	    #
+	    pcap_ldflags="-lodm -lcfg"
+            p0f_LDFLAGS_ADD([$pcap_ldflags], [P0F_LDFLAGS])
+ 	    AC_CHECK_HEADERS([pcap.h], [],
+ 		[])
+	    AC_CHECK_HEADERS([pcap-bpf.h], [], [])
+	    ;;
+        *)
+	AC_SEARCH_LIBS([pcap_findalldevs], [pcap],
+	  [have_pcap=yes])
+	AS_IF([test "x${have_pcap}" = xno],
+	      [ AC_SEARCH_LIBS([pcap_findalldevs], [wpcap],
+	      [have_pcap=yes])
+	      AS_IF([test "x${have_pcap}" = xyes],
+	            [
+ 	 		AC_CHECK_HEADERS([pcap.h], [],
+ 		        [have_pcap=no])
+	                AC_CHECK_HEADERS([pcap-bpf.h], [],
+	                [have_pcap=no])
+	                AS_IF([test "x${have_pcap}" = xno],
+	                      [AC_MSG_ERROR([pcap library don't found])]
+	                )
+	            ],
+	            [AC_MSG_ERROR([pcap library don't found])]
+	      )
+	      ]
+	)
+        ;;
+	esac
+        ]
 )
-
 # build and distribuite the optional p0f tools
 AC_ARG_ENABLE([build-p0f-tools],
   [AS_HELP_STRING([--enable-build-p0f-tools],
@@ -187,7 +236,7 @@ AC_SUBST([POPT_LDFLAGS])
 AC_SUBST([P0F_CFLAGS])
 
 # Checks for header files.
-AC_CHECK_HEADERS([arpa/inet.h locale.h netdb.h netinet/in.h stdint.h stdlib.h string.h sys/file.h sys/socket.h sys/time.h unistd.h])
+AC_CHECK_HEADERS([arpa/inet.h getopt.h locale.h netdb.h netinet/in.h stdint.h stdlib.h string.h sys/file.h sys/socket.h net/bpf.h sys/time.h unistd.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_C_INLINE

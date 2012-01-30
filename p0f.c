@@ -15,7 +15,9 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <signal.h>
+#ifdef HAVE_GETOPT_H
 #include <getopt.h>
+#endif
 #include <errno.h>
 #include <dirent.h>
 #include <pwd.h>
@@ -28,7 +30,7 @@
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <sys/un.h>
-#include <sys/fcntl.h>
+#include <fcntl.h>
 #include <sys/stat.h>
 #include <sys/file.h>
 #include <sys/wait.h>
@@ -36,10 +38,12 @@
 
 #include <pcap.h>
 
-#ifdef NET_BPF
+#ifdef HAVE_NET_BPF_H
 #  include <net/bpf.h>
 #else
+#ifdef  HAVE_PCAP_BPF_H
 #  include <pcap-bpf.h>
+#endif
 #endif /* !NET_BPF */
 
 #include "types.h"
