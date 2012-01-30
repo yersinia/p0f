@@ -2,8 +2,9 @@
 
 ACLOCAL_AMFLAGS = -I m4
 AM_CPPFLAGS = -I. -I$(top_srcdir)
-AM_CFLAGS = $(P0F_CFLAGS)
-AM_LDFLAGS = $(P0F_LDFLAGS)
+AM_CFLAGS = $(P0F_CFLAGS) -I/usr/local/include/ -I/opt/local/include/ 
+AM_LDFLAGS = $(P0F_LDFLAGS) -L/usr/local/lib/ -L/opt/local/lib
+
 
 ## begin configmake
 

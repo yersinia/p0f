@@ -60,6 +60,94 @@ AC_ARG_ENABLE([build-p0f-tools],
 AM_CONDITIONAL([BUILD_P0F_TOOLS],[test "$build_p0f_tools" = "yes"])
 
 
+AC_ARG_ENABLE([debug],
+  [AS_HELP_STRING([--enable-gcc-debug],
+                  [turn on GCC debugging options  (for developers)@<:@default=no@:>@])],
+  [case $enableval in
+     yes|no) ;;
+     *)      AC_MSG_ERROR([bad value $enableval for gcc-debug option]) ;;
+   esac
+   p0f_gcc_debug=$enableval],
+  [p0f_gcc_debug=no]
+)
+
+AS_IF([test "x$p0f_gcc_debug" = xyes],
+  [ 
+  p0f_CFLAGS_ADD([-g], [P0F_CFLAGS])
+  p0f_CFLAGS_ADD([-ggdb], [P0F_CFLAGS])
+  ])
+
+
+# Turn gcc warning
+
+AC_ARG_ENABLE([gcc-warnings],
+  [AS_HELP_STRING([--enable-gcc-warnings],
+                  [turn on GCC warnings (for developers)@<:@default=no@:>@])],
+  [case $enableval in
+     yes|no) ;;
+     *)      AC_MSG_ERROR([bad value $enableval for gcc-warnings option]) ;;
+   esac
+   p0f_gcc_warnings=$enableval],
+  [p0f_gcc_warnings=no]
+)
+
+AS_IF([test "x$p0f_gcc_warnings" = xyes],
+  [ # Add/Delete as needed
+  p0f_CFLAGS_ADD([-Wall], [P0F_CFLAGS])
+  p0f_CFLAGS_ADD([-pedantic], [P0F_CFLAGS])
+  p0f_CFLAGS_ADD([-Wextra], [P0F_CFLAGS])
+  p0f_CFLAGS_ADD([-Wformat-y2k], [P0F_CFLAGS])
+  p0f_CFLAGS_ADD([-fdiagnostics-show-option],[P0F_CFLAGS])
+  p0f_CFLAGS_ADD([-funit-at-a-time],[P0F_CFLAGS])
+  p0f_CFLAGS_ADD([-fstrict-aliasing],[P0F_CFLAGS])
+  p0f_CFLAGS_ADD([-Wstrict-overflow],[P0F_CFLAGS])
+  p0f_CFLAGS_ADD([-fstrict-overflow],[P0F_CFLAGS])
+  p0f_CFLAGS_ADD([-Wpointer-arith],[P0F_CFLAGS])
+  p0f_CFLAGS_ADD([-Wno-format],[P0F_CFLAGS])
+  ])
+
+
+# build p0f with mudflap instrumentation (GCC only)
+p0f_gcc_mudflap=no
+AC_ARG_ENABLE([mudflap],
+ [AS_HELP_STRING([--enable-mudflap],
+                  [build P0F with mudflap instrumentation (@<:@default=no@:>@) (with GCC only) (EXPERIMENTAL)])],
+ [case $enableval in
+     yes|no) ;;
+     *)      AC_MSG_ERROR([bad value $enableval for mudflap option]) ;;
+   esac
+   p0f_gcc_mudflap=$enableval],
+[ p0f_gcc_mudflap=no ])
+
+AS_IF([ test x"$p0f_gcc_mudflap" = x"yes" ], 
+  [
+        AS_IF([test "x$GCC" != x],
+              [ 
+		old_CFLAGS="$CFLAGS"
+		CFLAGS="$CFLAGS -fmudflap"
+		old_LDFLAGS="$LDFLAGS"
+		LDFLAGS="$LDFLAGS -lmudflap"
+		AC_LINK_IFELSE([AC_LANG_PROGRAM([[]], [[]])],[p0f_gcc_mudflap=yes],[p0f_gcc_mudflap=fail])
+		CFLAGS="$old_CFLAGS"
+		LDFLAGS="$old_LDFLAGS"
+		AS_IF([ test "$p0f_gcc_mudflap" = fail ],
+                      [
+ 	  	       AC_MSG_WARN([--enable-mudflap requires a compiler which understands this option.])
+                      ],
+                      [
+                        p0f_CFLAGS_ADD([-fmudflap], [P0F_CFLAGS])
+                	p0f_LDFLAGS_ADD([-lmudflap], [P0F_LDFLAGS])
+                        # XXX: memory leak ?
+                        #MUDFLAP_OPTIONS="-mode-check -abbreviate -viol-abort -check-initialization -print-leaks"
+                        MUDFLAP_OPTIONS="-mode-check -abbreviate -check-initialization"
+			AC_SUBST([MUDFLAP_OPTIONS])
+                      ])
+              ],
+              [ AC_MSG_WARN([--enable-mudflap requires GCC])]
+        )
+  ])
+     
+
 # build p0f instrumented for -fPIE (GCC only)
 AC_ARG_ENABLE([build-pie],
   [AS_HELP_STRING([--enable-build-pie],
@@ -84,12 +172,14 @@ AS_IF([test "x$p0f_gcc_pie" = xyes],
 
 # build p0f instrumented for extra optimization/security (GCC only)
 # -fno-delete-null-pointer as the kernel does http://patchwork.kernel.org/patch/36060/
+# add relro 
 # GNU GCC (usually "gcc")
 AS_IF([test "x$GCC" != x],
  [ for c in -fno-delete-null-pointer-checks -D_FORTIFY_SOURCE=2 -fstack-protector -fexceptions -fstack-protector-all 
    do
   	p0f_CFLAGS_ADD([$c], [P0F_CFLAGS])
    done
+   p0f_LDFLAGS_ADD([-Wl,-z,relro], [P0F_LDFLAGS])
  ])
 
 # Finally put an AC_SUBST for all the CFLAGS and LDFLAGS above
