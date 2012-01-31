@@ -13,6 +13,7 @@
 
 #include "types.h"
 #include "process.h"
+#include "system.h"
 
 extern u8  daemon_mode;
 extern s32 link_type;

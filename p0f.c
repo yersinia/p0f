@@ -38,13 +38,6 @@
 
 #include <pcap.h>
 
-#ifdef HAVE_NET_BPF_H
-#  include <net/bpf.h>
-#else
-#ifdef  HAVE_PCAP_BPF_H
-#  include <pcap-bpf.h>
-#endif
-#endif /* !NET_BPF */
 
 #include "types.h"
 #include "debug.h"
@@ -55,6 +48,15 @@
 #include "tcp.h"
 #include "fp_http.h"
 #include "p0f.h"
+
+#ifdef HAVE_NET_BPF_H
+#include <net/bpf.h>
+#else
+#ifdef  HAVE_PCAP_BPF_H
+#include <pcap-bpf.h>
+#endif /*HAVE_PCAP_BPF_H*/
+#endif /* HAVE_NET_BPF_H */
+
 
 #ifndef PF_INET6
 #  define PF_INET6          10
