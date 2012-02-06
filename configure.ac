@@ -209,14 +209,14 @@ AC_ARG_ENABLE([build-pie],
   [p0f_gcc_pie=yes]
 )
 AS_IF([test "x$p0f_gcc_pie" = xyes],
-      [
+  [
         AS_IF([test "x$GCC" != x],
               [ p0f_CFLAGS_ADD([-fpie], [P0F_CFLAGS])
                 p0f_LDFLAGS_ADD([-pie], [P0F_LDFLAGS])
               ],
               [ AC_MSG_WARN([--enable-build-pie requires GCC])]
         )
-      ])
+   ])
 
 
 # build p0f instrumented for extra optimization/security (GCC only)
