@@ -75,7 +75,6 @@ LINGUAS
 logs
 ltconfig
 ltmain.sh
-m4
 *.m4
 Makefile
 Makefile.in
