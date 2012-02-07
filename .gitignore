@@ -35,6 +35,9 @@ aclocal.m4
 archive.tar.gz
 autom4te*
 build
+!m4/p0f.m4
+*.m4
+m4
 build-aux
 cat-id-tbl.c
 .ccache
