@@ -37,6 +37,7 @@
 #include <netinet/in.h>
 
 #include <pcap.h>
+#include <limits.h> /* For PATH_MAX */
 
 
 #include "types.h"
@@ -49,7 +50,7 @@
 #include "fp_http.h"
 #include "p0f.h"
 
-#ifdef HAVE_NET_BPF_H
+#if defined(HAVE_NET_BPF_H) &&  !defined(HAVE_PCAP_BPF_H)
 #include <net/bpf.h>
 #else
 #ifdef  HAVE_PCAP_BPF_H

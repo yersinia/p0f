@@ -37,7 +37,7 @@
 #include "fp_mtu.h"
 #include "fp_http.h"
 
-#ifdef HAVE_NET_BPF_H
+#if defined(HAVE_NET_BPF_H) &&  !defined(HAVE_PCAP_BPF_H)
 #include <net/bpf.h>
 #else
 #ifdef  HAVE_PCAP_BPF_H
