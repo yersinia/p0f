@@ -22,6 +22,7 @@ AC_PROG_MAKE_SET
 
 # Checks for libraries.
 AC_MSG_CHECKING([checking for pcap library]) 
+LIB_SOCKET_NSL
 have_pcap=no
 AC_PATH_TOOL(PCAP_CONFIG, pcap-config)
 AS_IF([test -n "$PCAP_CONFIG"],
