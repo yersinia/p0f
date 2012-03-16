@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.63])
-AC_INIT([p0f], [3.03b], [lcamtuf@coredump.cx])
+AC_INIT([p0f], [3.03c], [lcamtuf@coredump.cx])
 AC_CONFIG_SRCDIR([readfp.h])
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_MACRO_DIR([m4])
