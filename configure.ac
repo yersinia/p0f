@@ -251,7 +251,7 @@ AC_SUBST([POPT_LDFLAGS])
 AC_SUBST([P0F_CFLAGS])
 
 # Checks for header files.
-AC_CHECK_HEADERS([arpa/inet.h getopt.h limits.h locale.h netdb.h sys/file.h netinet/in.h stdint.h stdlib.h string.h sys/socket.h net/bpf.h sys/time.h unistd.h])
+AC_CHECK_HEADERS([arpa/inet.h fcntl.h getopt.h limits.h locale.h netdb.h sys/file.h netinet/in.h stdint.h stdlib.h string.h sys/socket.h net/bpf.h sys/time.h unistd.h])
 
 # for gnulib
 gl_INIT
