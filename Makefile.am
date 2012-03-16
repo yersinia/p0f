@@ -1,8 +1,8 @@
 # Makefile for p03f 
 
 ACLOCAL_AMFLAGS = -I m4
-AM_CPPFLAGS = -I. -I$(top_srcdir)
-AM_CFLAGS = $(P0F_CFLAGS) -I/usr/local/include/ -I/opt/local/include/ 
+AM_CPPFLAGS = -I. -I$(top_srcdir) -I$(top_builddir)/lib -I$(top_srcdir)/lib -I/usr/local/include/ -I/opt/local/include/ 
+AM_CFLAGS = $(P0F_CFLAGS)
 AM_LDFLAGS = $(P0F_LDFLAGS) -L/usr/local/lib/ -L/opt/local/lib
 
 
@@ -69,16 +69,17 @@ CLEANFILES = configmake.h configmake.h-t
 
 ## end configmake
 
-SUBDIRS = . tools
+SUBDIRS = lib tools 
 
 bin_PROGRAMS = p0f
 p0f_SOURCES = api.c fp_http.c fp_mtu.c fp_tcp.c p0f.c process.c readfp.c
 noinst_HEADERS = alloc-inl.h api.h debug.h fp_http.h fp_mtu.h fp_tcp.h hash.h languages.h p0f.h process.h readfp.h system.h tcp.h types.h
+LDADD = $(top_builddir)/lib/libgnu.a
 
 p0fdir = $(pkgdatadir)
 dist_p0f_DATA = p0f.fp
 
-EXTRA_DISTS = autogen.sh README-prereq
+EXTRA_DISTS = autogen.sh README-prereq m4/gnulib-cache.m4
 
 dist_doc_DATA  = ChangeLog COPYING  README TODO docs/existential-notes.txt docs/extra-sigs.txt
 #dist_man_MANS = p03f.3

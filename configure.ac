@@ -17,6 +17,7 @@ AC_COPYRIGHT([Copyright (C) 2012 by Michal Zalewski <lcamtuf@coredump.cx>])
 
 # Checks for programs.
 AC_PROG_CC
+gl_EARLY
 AC_PROG_INSTALL
 AC_PROG_MAKE_SET
 
@@ -96,6 +97,19 @@ AS_IF([test -n "$PCAP_CONFIG"],
 	esac
         ]
 )
+
+# 
+# Check for gnulib flock replacement
+#
+gl_FUNC_FLOCK
+if test $HAVE_FLOCK = 0; then
+AC_LIBOBJ([flock])
+gl_PREREQ_FLOCK
+fi
+gl_HEADER_SYS_FILE_MODULE_INDICATOR([flock])
+
+
+
 # build and distribuite the optional p0f tools
 AC_ARG_ENABLE([build-p0f-tools],
   [AS_HELP_STRING([--enable-build-p0f-tools],
@@ -237,7 +251,10 @@ AC_SUBST([POPT_LDFLAGS])
 AC_SUBST([P0F_CFLAGS])
 
 # Checks for header files.
-AC_CHECK_HEADERS([arpa/inet.h getopt.h locale.h netdb.h netinet/in.h stdint.h stdlib.h string.h sys/file.h sys/socket.h net/bpf.h sys/time.h unistd.h])
+AC_CHECK_HEADERS([arpa/inet.h getopt.h limits.h locale.h netdb.h sys/file.h netinet/in.h stdint.h stdlib.h string.h sys/socket.h net/bpf.h sys/time.h unistd.h])
+
+# for gnulib
+gl_INIT
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_C_INLINE
@@ -254,5 +271,6 @@ AC_TYPE_UINT8_T
 AC_CHECK_FUNCS([fork malloc mktime realloc dup2 memmove memset setlocale socket strcasecmp strchr strncasecmp strstr tzset])
 
 AC_CONFIG_FILES([Makefile
-                 tools/Makefile])
+                 tools/Makefile
+                 lib/Makefile])
 AC_OUTPUT
