@@ -39,8 +39,6 @@ build-aux
 cat-id-tbl.c
 .ccache
 clang
-lib
-m4
 config.cache
 config.guess
 config.h

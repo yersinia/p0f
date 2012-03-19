@@ -12,7 +12,7 @@
 #define _HAVE_DEBUG_H
 
 #include "types.h"
-#include "config.h"
+#include "system.h"
 
 #ifdef DEBUG_BUILD
 #  define DEBUG(x...) fprintf(stderr, x)

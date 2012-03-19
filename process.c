@@ -15,7 +15,7 @@
 #include <time.h>
 #include <ctype.h>
 
-#include <sys/fcntl.h>
+#include <fcntl.h>
 #include <netinet/in.h>
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -24,7 +24,7 @@
 #include <sys/stat.h>
 
 #include "types.h"
-#include "config.h"
+#include "system.h"
 #include "debug.h"
 #include "alloc-inl.h"
 #include "process.h"
@@ -36,6 +36,14 @@
 #include "fp_tcp.h"
 #include "fp_mtu.h"
 #include "fp_http.h"
+
+#if defined(HAVE_NET_BPF_H) &&  !defined(HAVE_PCAP_BPF_H)
+#include <net/bpf.h>
+#else
+#ifdef  HAVE_PCAP_BPF_H
+#include <pcap-bpf.h>
+#endif /*HAVE_PCAP_BPF_H*/
+#endif /* HAVE_NET_BPF_H */
 
 u64 packet_cnt;                         /* Total number of packets processed  */
 
@@ -87,12 +95,17 @@ static void find_offset(const u8* data, s32 total_len) {
 
   switch (link_type) {
 
+#ifdef DLT_RAW
     case DLT_RAW:        link_off = 0;  return;
-
+#endif /* DLT_RAW */
+#ifdef DLT_NULL
     case DLT_NULL:
+#endif /* DLT_NULL */
     case DLT_PPP:        link_off = 4;  return;
 
+#ifdef DLT_LOOP
     case DLT_LOOP:
+#endif /* DLT_LOOP */
 
 #ifdef DLT_PPP_SERIAL
     case DLT_PPP_SERIAL:
@@ -107,8 +120,9 @@ static void find_offset(const u8* data, s32 total_len) {
 #endif /* DLT_LINUX_SLL */
 
     case DLT_PFLOG:      link_off = 28; return;
-
+#ifdef DLT_IEEE802_11
     case DLT_IEEE802_11: link_off = 32; return;
+#endif /* DLT_IEEE802_11 */
   }
 
   /* If this fails, try to auto-detect. There is a slight risk that if the

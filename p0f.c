@@ -15,7 +15,9 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <signal.h>
+#ifdef HAVE_GETOPT_H
 #include <getopt.h>
+#endif
 #include <errno.h>
 #include <dirent.h>
 #include <pwd.h>
@@ -28,19 +30,15 @@
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <sys/un.h>
-#include <sys/fcntl.h>
+#include <fcntl.h>
 #include <sys/stat.h>
 #include <sys/file.h>
 #include <sys/wait.h>
 #include <netinet/in.h>
 
 #include <pcap.h>
+#include <limits.h> /* For PATH_MAX */
 
-#ifdef NET_BPF
-#  include <net/bpf.h>
-#else
-#  include <pcap-bpf.h>
-#endif /* !NET_BPF */
 
 #include "types.h"
 #include "debug.h"
@@ -51,6 +49,15 @@
 #include "tcp.h"
 #include "fp_http.h"
 #include "p0f.h"
+
+#if defined(HAVE_NET_BPF_H) &&  !defined(HAVE_PCAP_BPF_H)
+#include <net/bpf.h>
+#else
+#ifdef  HAVE_PCAP_BPF_H
+#include <pcap-bpf.h>
+#endif /*HAVE_PCAP_BPF_H*/
+#endif /* HAVE_NET_BPF_H */
+
 
 #ifndef PF_INET6
 #  define PF_INET6          10
@@ -115,6 +122,9 @@ u32 TRK_cnt[ALLOC_BUCKETS];
 
 static void usage(void) {
 
+
+#ifndef __CYGWIN__
+
   ERRORF(
 
 "Usage: p0f [ ...options... ] [ 'filter rule' ]\n"
@@ -130,17 +140,13 @@ static void usage(void) {
 "\n"
 "  -f file   - read fingerprint database from 'file' (%s)\n"
 "  -o file   - write information to the specified log file\n"
-#ifndef __CYGWIN__
 "  -s name   - answer to API queries at a named unix socket\n"
-#endif /* !__CYGWIN__ */
 "  -u user   - switch to the specified unprivileged account and chroot\n"
 "  -d        - fork into background (requires -o or -s)\n"
 "\n"
 "Performance-related options:\n"
 "\n"
-#ifndef __CYGWIN__
 "  -S limit  - limit number of parallel API connections (%u)\n"
-#endif /* !__CYGWIN__ */
 "  -t c,h    - set connection / host cache age limits (%us,%um)\n"
 "  -m c,h    - cap the number of active connections / hosts (%u,%u)\n"
 "\n"
@@ -150,10 +156,42 @@ static void usage(void) {
 "Problems? You can reach the author at <lcamtuf@coredump.cx>.\n",
 
     FP_FILE,
-#ifndef __CYGWIN__
     API_MAX_CONN,
-#endif /* !__CYGWIN__ */
     CONN_MAX_AGE, HOST_IDLE_LIMIT, MAX_CONN,  MAX_HOSTS);
+
+#else 
+
+  ERRORF(
+
+"Usage: p0f [ ...options... ] [ 'filter rule' ]\n"
+"\n"
+"Network interface options:\n"
+"\n"
+"  -i iface  - listen on the specified network interface\n"
+"  -r file   - read offline pcap data from a given file\n"
+"  -p        - put the listening interface in promiscuous mode\n"
+"  -L        - list all available interfaces\n"
+"\n"
+"Operating mode and output settings:\n"
+"\n"
+"  -f file   - read fingerprint database from 'file' (%s)\n"
+"  -o file   - write information to the specified log file\n"
+"  -u user   - switch to the specified unprivileged account and chroot\n"
+"  -d        - fork into background (requires -o or -s)\n"
+"\n"
+"Performance-related options:\n"
+"\n"
+"  -t c,h    - set connection / host cache age limits (%us,%um)\n"
+"  -m c,h    - cap the number of active connections / hosts (%u,%u)\n"
+"\n"
+"Optional filter expressions (man tcpdump) can be specified in the command\n"
+"line to prevent p0f from looking at incidental network traffic.\n"
+"\n"
+"Problems? You can reach the author at <lcamtuf@coredump.cx>.\n",
+
+    FP_FILE,
+    CONN_MAX_AGE, HOST_IDLE_LIMIT, MAX_CONN,  MAX_HOSTS);
+#endif /* !__CYGWIN__ */
 
   exit(1);
 
@@ -1003,10 +1041,19 @@ static void offline_event_loop(void) {
 int main(int argc, char** argv) {
 
   s32 r;
+  char fppath[PATH_MAX+1];
+  
+  /*
+    fppath point to the standard location found in configure by default.
+    If i don't find here i try in the current directory, for
+    local build
+  */ 
+  snprintf(fppath,sizeof(fppath),"%s/%s",P0FDATADIR,FP_FILE);
+  if (access(fppath,R_OK)) snprintf(fppath,sizeof(fppath),"%s",FP_FILE);
 
   setlinebuf(stdout);
 
-  SAYF("--- p0f " VERSION " by Michal Zalewski <lcamtuf@coredump.cx> ---\n\n");
+  SAYF("--- p0f " PACKAGE_VERSION " by Michal Zalewski <lcamtuf@coredump.cx> ---\n\n");
 
   if (getuid() != geteuid())
     FATAL("Please don't make me setuid. See README for more.\n");
@@ -1188,7 +1235,7 @@ int main(int argc, char** argv) {
 
   http_init();
 
-  read_config(fp_file ? fp_file : (u8*)FP_FILE);
+  read_config(fp_file ? fp_file : (u8*)fppath);
 
   prepare_pcap();
   prepare_bpf();

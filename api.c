@@ -15,7 +15,7 @@
 #include <unistd.h>
 
 #include "types.h"
-#include "config.h"
+#include "system.h"
 #include "debug.h"
 #include "alloc-inl.h"
 #include "p0f.h"

@@ -17,13 +17,13 @@
 #include <unistd.h>
 #include <ctype.h>
 
-#include <sys/fcntl.h>
+#include <fcntl.h>
 #include <netinet/in.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 
 #include "types.h"
-#include "config.h"
+#include "system.h"
 #include "debug.h"
 #include "alloc-inl.h"
 #include "fp_tcp.h"

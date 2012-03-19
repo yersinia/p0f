@@ -26,11 +26,11 @@
 #include <sys/socket.h>
 #include <sys/un.h>
 
-#include "../types.h"
-#include "../config.h"
-#include "../alloc-inl.h"
-#include "../debug.h"
-#include "../api.h"
+#include "types.h"
+#include "system.h"
+#include "alloc-inl.h"
+#include "debug.h"
+#include "api.h"
 
 /* Parse IPv4 address into a buffer. */
 
