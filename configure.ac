@@ -124,9 +124,9 @@ AC_ARG_ENABLE([build-p0f-tools],
 AM_CONDITIONAL([BUILD_P0F_TOOLS],[test "$build_p0f_tools" = "yes"])
 
 
-AC_ARG_ENABLE([debug],
+AC_ARG_ENABLE([gcc-debug],
   [AS_HELP_STRING([--enable-gcc-debug],
-                  [turn on GCC debugging options  (for developers)@<:@default=no@:>@])],
+                  [turn on GCC and p0f debugging options (for developers)@<:@default=no@:>@])],
   [case $enableval in
      yes|no) ;;
      *)      AC_MSG_ERROR([bad value $enableval for gcc-debug option]) ;;
@@ -139,6 +139,7 @@ AS_IF([test "x$p0f_gcc_debug" = xyes],
   [ 
   p0f_CFLAGS_ADD([-g], [P0F_CFLAGS])
   p0f_CFLAGS_ADD([-ggdb], [P0F_CFLAGS])
+  p0f_CFLAGS_ADD([-DDEBUG_BUILD=1], [P0F_CFLAGS])
   ])
 
 
@@ -297,15 +298,21 @@ AS_IF([test "x$p0f_gcc_pie" = xyes],
 
 
 # build p0f instrumented for extra optimization/security (GCC only)
+# general (as in the original build.sh with some enhancement)
 # -fno-delete-null-pointer as the kernel does http://patchwork.kernel.org/patch/36060/
 # add relro 
 # GNU GCC (usually "gcc")
 AS_IF([test "x$GCC" != x],
- [ for c in -fno-delete-null-pointer-checks -D_FORTIFY_SOURCE=2 -fstack-protector -fexceptions -fstack-protector-all 
+ [ for c in -fno-delete-null-pointer-checks -D_FORTIFY_SOURCE=2 -fstack-protector -fexceptions -fstack-protector-all -Wno-format
    do
   	p0f_CFLAGS_ADD([$c], [P0F_CFLAGS])
    done
    p0f_LDFLAGS_ADD([-Wl,-z,relro], [P0F_LDFLAGS])
+   # add -O3 if not debug
+	AS_IF([test "x$p0f_gcc_debug" != xyes],
+	  [ 
+	  p0f_CFLAGS_ADD([-03], [P0F_CFLAGS])
+	  ])
  ])
 
 # Finally put an AC_SUBST for all the CFLAGS and LDFLAGS above
